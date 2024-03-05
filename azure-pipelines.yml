@@ -80,6 +80,12 @@ steps:
           solution: "$(solutionUITests)"
           configuration: "$(buildConfiguration)"
 
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'drop'
+
     - task: Windows Application Driver@0
       displayName: Start Windows Application Driver
       inputs:
@@ -97,11 +103,7 @@ steps:
               !**\ref\**
           searchFolder: "$(System.DefaultWorkingDirectory)"
 
-    - task: PublishPipelineArtifact@1
-      displayName: 'Publish Artifact: drop'
-      inputs:
-          targetPath: '$(Build.ArtifactStagingDirectory)'
-          artifact: 'drop'
+    
 
     - task: Windows Application Driver@0
       displayName: Stop Windows Application Driver
