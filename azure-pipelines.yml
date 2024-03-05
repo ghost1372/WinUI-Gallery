@@ -97,6 +97,12 @@ steps:
               !**\ref\**
           searchFolder: "$(System.DefaultWorkingDirectory)"
 
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact: drop'
+      inputs:
+          targetPath: '$(Build.ArtifactStagingDirectory)'
+          artifact: 'drop'
+
     - task: Windows Application Driver@0
       displayName: Stop Windows Application Driver
       inputs:
