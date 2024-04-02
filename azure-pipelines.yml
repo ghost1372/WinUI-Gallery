@@ -2,15 +2,16 @@ name: $(BuildDefinitionName)_$(date:yyMM).$(date:dd)$(rev:rrr)
 
 trigger: none
 
-pool:
-    vmImage: "windows-2022"
-
 variables:
     solutionGallery: "**/WinUIGallery.sln"
     solutionUITests: "**/UITests.sln"
     buildPlatform: "x64"
     buildConfiguration: "Debug"
     appxPackageDir: '$(build.artifactStagingDirectory)\AppxPackages\\'
+    # Docker image which is used to build the project https://aka.ms/obpipelines/containers
+    WindowsContainerImage: 'onebranch.azurecr.io/windows/ltsc2019/vse2022:latest' 
+
+    Codeql.Enabled: true #  CodeQL once every 3 days on the default branch for all languages its applicable to in that pipeline.
 
 resources:
   repositories: 
@@ -18,10 +19,6 @@ resources:
       type: git
       name: OneBranch.Pipelines/GovernedTemplates
       ref: refs/heads/main
-    - repository: WinUI-Gallery # The name used to reference this repository in the checkout step
-      type: github
-      endpoint: microsoft
-      name: microsoft/WinUI-Gallery
 
 extends:
   template: v2/Microsoft.Official.yml@templates # https://aka.ms/obpipelines/templates
@@ -37,6 +34,8 @@ extends:
     - stage: build
       jobs: 
       - job: main
+        pool:
+          type: windows
 
         steps:
         - task: NuGetToolInstaller@1
