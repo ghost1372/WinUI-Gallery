@@ -36,6 +36,8 @@ extends:
       - job: main
         pool:
           type: windows
+        variables:
+          ob_outputDirectory: $(Build.ArtifactStagingDirectory)
 
         steps:
         - task: NuGetToolInstaller@1
@@ -72,8 +74,6 @@ extends:
             dir /b /s $(System.DefaultWorkingDirectory)
           displayName: 'List contents of ArtifactStagingDirectory and DefaultWorkingDirectory'
 
-      - job: runTests
-        steps:
         - task: VSTest@2
           displayName: 'Run Sample Unit Tests'
           inputs:
@@ -108,11 +108,18 @@ extends:
               solution: "$(solutionUITests)"
               configuration: "$(buildConfiguration)"
 
-        - task: PublishPipelineArtifact@1
+      - job: pack
+        pool:
+          type: windows
+        variables:
+          publishDir: $(Build.SourcesDirectory)\publish
+          ob_outputDirectory: $(publishDir)
+        steps:
+        - task: DownloadPipelineArtifact@2
           displayName: 'Publish Artifact: drop'
           inputs:
-            PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-            ArtifactName: 'drop'
+            artifactName: drop
+            targetPath: $(Build.SourcesDirectory)\Artifacts
 
         - task: Windows Application Driver@0
           displayName: Start Windows Application Driver
